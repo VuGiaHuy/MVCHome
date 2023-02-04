@@ -1,0 +1,54 @@
+@using System.Data
+@using Microsoft.EntityFrameworkCore
+@inject App.Models.AppDbContext _dbContext
+@{
+    ViewData["Title"] = "DbManage";
+    var connect = _dbContext.Database.GetDbConnection();
+    var canConnect = _dbContext.Database.CanConnect();
+}
+<partial name="_StatusMessage" />
+<h2>Data Information:</h2>
+<p>Database: @connect.Database</p>
+<p>DataSource: @connect.DataSource</p>
+<p>State: @connect.State</p>
+
+<hr>
+
+<h2>Migration</h2>
+<ul>
+    @foreach (var migration in _dbContext.Database.GetAppliedMigrations())
+    {
+        <li>@migration</li>   
+    }
+</ul>
+<ul>
+    @foreach (var migration in _dbContext.Database.GetPendingMigrations())
+    {
+        <li>@migration (pending)</li>   
+    }
+</ul>
+<hr>
+@if(_dbContext.Database.GetPendingMigrations().Any())
+{
+    <form method="post" asp-action="Migrate">
+        <button class="btn btn-primary" type="summit">Migrate</button>
+    </form>
+    <br>
+}
+@if(canConnect)
+{
+    <h2>Tables:</h2>
+    await connect.OpenAsync();
+    DataTable table = _dbContext.Database.GetDbConnection().GetSchema("Tables");
+    <ul>
+        @foreach(System.Data.DataRow row in table.Rows)
+        {
+            <li>@row["TABLE_NAME"]</li>
+        }
+    </ul>
+    <a class="btn btn-danger" asp-action="DeleteDB">Delete Databse</a>
+}
+@if(!canConnect)
+{
+    <div class="alert alert-danger">Can't connect DB</div>
+}
