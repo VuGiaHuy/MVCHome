@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using App.Models;
 using App.Models.Contact;
 using Microsoft.AspNetCore.Authorization;
+using App.Data;
 
 namespace Area.Contact.Controllers
 {
+    [Authorize(Roles = RoleName.Administrator)]
     [Area("Contact")]
     [Route("/Contact/[action]")]
     public class ContactController : Controller
