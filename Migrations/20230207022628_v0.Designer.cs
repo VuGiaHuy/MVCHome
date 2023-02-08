@@ -131,7 +131,7 @@ namespace MyApp.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("App.Models.Contact.ContactModel", b =>
+            modelBuilder.Entity("App.Models.Contact.ContactModels", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

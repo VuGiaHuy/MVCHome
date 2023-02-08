@@ -13,7 +13,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.EnableSensitiveDataLogging();
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,10 +25,18 @@ public class AppDbContext : IdentityDbContext<AppUser>
                 entityType.SetTableName(tableName.Substring(6));
             }
         }
-        modelBuilder.Entity<Category>(options=>{
-            options.HasIndex(category=>category.Slug);
+        modelBuilder.Entity<Category>(entity=>{
+            entity.HasIndex(category=>category.Slug).IsUnique();
+        });
+        modelBuilder.Entity<PostCategory>(entity=>{
+            entity.HasKey(c=>new {c.CategoryId,c.PostId});
+        });
+        modelBuilder.Entity<Post>(entity=>{
+            entity.HasIndex(p=>p.Slug).IsUnique();
         });
     }
-    public virtual DbSet<Category> Categories {get;set;}
-    public virtual DbSet<ContactModel> ContactModels {get;set;}
+    public DbSet<Category> Categories {get;set;}
+    public DbSet<ContactModels> ContactModels {get;set;}
+    public DbSet<PostCategory> PostCategories {get;set;}
+    public DbSet<Post> Posts {get;set;}
 }

@@ -42,14 +42,14 @@ namespace Area.Contact.Controllers
                 return NotFound();
             }
 
-            var contactModel = await _context.ContactModels
+            var ContactModels = await _context.ContactModels
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contactModel == null)
+            if (ContactModels == null)
             {
                 return NotFound();
             }
 
-            return View(contactModel);
+            return View(ContactModels);
         }
 
         // GET: Contact/Create
@@ -65,17 +65,17 @@ namespace Area.Contact.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> SendContact([Bind("Name,Email,Message")] ContactModel contactModel)
+        public async Task<IActionResult> SendContact([Bind("Name,Email,Message")] ContactModels ContactModels)
         {
             if (ModelState.IsValid)
             {
-                contactModel.DateSend = DateTime.Now;
-                _context.Add(contactModel);
+                ContactModels.DateSend = DateTime.Now;
+                _context.Add(ContactModels);
                 await _context.SaveChangesAsync();
                 StatusMessage = "Send Success!";
                 return LocalRedirect("/");
             }
-            return View(contactModel);
+            return View(ContactModels);
         }
 
         // GET: Contact/Edit/5
@@ -86,12 +86,12 @@ namespace Area.Contact.Controllers
                 return NotFound();
             }
 
-            var contactModel = await _context.ContactModels.FindAsync(id);
-            if (contactModel == null)
+            var ContactModels = await _context.ContactModels.FindAsync(id);
+            if (ContactModels == null)
             {
                 return NotFound();
             }
-            return View(contactModel);
+            return View(ContactModels);
         }
 
         // POST: Contact/Edit/5
@@ -99,9 +99,9 @@ namespace Area.Contact.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,DateSend,Message")] ContactModel contactModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,DateSend,Message")] ContactModels ContactModels)
         {
-            if (id != contactModel.Id)
+            if (id != ContactModels.Id)
             {
                 return NotFound();
             }
@@ -110,12 +110,12 @@ namespace Area.Contact.Controllers
             {
                 try
                 {
-                    _context.Update(contactModel);
+                    _context.Update(ContactModels);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ContactModelExists(contactModel.Id))
+                    if (!ContactModelsExists(ContactModels.Id))
                     {
                         return NotFound();
                     }
@@ -126,7 +126,7 @@ namespace Area.Contact.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(contactModel);
+            return View(ContactModels);
         }
 
         // GET: Contact/Delete/5
@@ -137,14 +137,14 @@ namespace Area.Contact.Controllers
                 return NotFound();
             }
 
-            var contactModel = await _context.ContactModels
+            var ContactModels = await _context.ContactModels
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contactModel == null)
+            if (ContactModels == null)
             {
                 return NotFound();
             }
 
-            return View(contactModel);
+            return View(ContactModels);
         }
 
         // POST: Contact/Delete/5
@@ -156,17 +156,17 @@ namespace Area.Contact.Controllers
             {
                 return Problem("Entity set 'AppDbContext.ContactModels'  is null.");
             }
-            var contactModel = await _context.ContactModels.FindAsync(id);
-            if (contactModel != null)
+            var ContactModels = await _context.ContactModels.FindAsync(id);
+            if (ContactModels != null)
             {
-                _context.ContactModels.Remove(contactModel);
+                _context.ContactModels.Remove(ContactModels);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ContactModelExists(int id)
+        private bool ContactModelsExists(int id)
         {
           return (_context.ContactModels?.Any(e => e.Id == id)).GetValueOrDefault();
         }
