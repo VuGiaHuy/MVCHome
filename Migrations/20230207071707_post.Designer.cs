@@ -196,7 +196,7 @@ namespace MyApp.Migrations
                     b.ToTable("PostCategory");
                 });
 
-            modelBuilder.Entity("App.Models.Contact.ContactModel", b =>
+            modelBuilder.Entity("App.Models.Contact.ContactModels", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

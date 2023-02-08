@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace App.Models.Contact;
-public class ContactModel
+public class ContactModels
 {
     [Key]
     public int Id {get;set;}

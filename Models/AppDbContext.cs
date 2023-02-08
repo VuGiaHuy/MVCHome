@@ -36,7 +36,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
         });
     }
     public DbSet<Category> Categories {get;set;}
-    public DbSet<ContactModel> ContactModels {get;set;}
+    public DbSet<ContactModels> ContactModels {get;set;}
     public DbSet<PostCategory> PostCategories {get;set;}
     public DbSet<Post> Posts {get;set;}
 }
