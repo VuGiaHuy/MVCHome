@@ -6,3 +6,10 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<textarea  id="summerNote"></textarea>
+
+@{
+    var SummerNote = new App.Models.SummerNote("#summerNote");
+}
+<partial name="_SummerNote" model="SummerNote"/>

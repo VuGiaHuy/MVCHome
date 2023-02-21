@@ -53,6 +53,14 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+@{
+    var summerNote = new App.Models.SummerNote("#Content");
+}
+<partial name="_SummerNote" model="summerNote" />
+
+
+
+
 
 
 @section Scripts {

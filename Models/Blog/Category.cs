@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -32,13 +33,37 @@ namespace App.Models.Blog {
       public string Slug { set; get; }
 
       // Các Category con
-      public ICollection<Category>? CategoryChildren { get; set; }
+      public ICollection<Category>? ChildrenCategory { get; set; }
 
       [ForeignKey("ParentCategoryId")]
       [Display(Name = "Danh mục cha")]
 
 
       public Category? ParentCategory { set; get; }
-
+      public void ChildCategoryIDs(List<int> list,ICollection<Category> childCate)
+      {
+          if(childCate == null)
+            return;     
+          if(childCate?.Count > 0)
+          {
+              foreach(Category cate in childCate)
+              {                       
+                  list.Add(cate.Id);
+                  ChildCategoryIDs(list,cate.ChildrenCategory);                                                  
+              }
+          }
+      }
+      public List<Category> ListParent()
+      {
+        List<Category> list = new List<Category>();
+        var parent = this.ParentCategory;
+        while(parent != null)
+        {
+          list.Add(parent);
+          parent = parent.ParentCategory;
+        }
+        list.Reverse();
+        return list;
+      }
   }
-}
+} 

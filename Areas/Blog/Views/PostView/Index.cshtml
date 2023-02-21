@@ -1,0 +1,82 @@
+@model List<Post>
+@using App.Components
+@using App.Models.Blog
+@{
+    List<Category> categories = ViewBag.Categories as List<Category>;
+    Category category = ViewBag.Category as Category;
+    ViewData["Title"] = (category!=null)?category.Title:"All post";
+}
+
+<nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="~/">Home</a></li>
+    @if(category != null)
+    {
+        var listParent = category.ListParent();
+        if(listParent != null)
+        {
+            foreach(var parent in listParent)
+            {
+                <li class="breadcrumb-item">
+                    <a asp-action="Index" 
+                            asp-controller="PostView" 
+                            asp-route-categoryslug="@parent.Slug">@parent.Title</a></li>
+            }
+        }
+    }
+  </ol>
+</nav>
+<h1>@ViewData["Title"]</h1>
+@if(category != null)
+{
+    @category.Content
+}
+else
+{
+    <p>All post</p>
+}
+<hr>
+
+@foreach (var post in Model)
+{
+    <div class="d-flex border-bottom mb-3 pb-3">
+    <div class="flex-shrink-0">
+        <img src="~/files/nophoto.jpg" class="img-thumbnail" alt="...">
+    </div>
+    <div class="flex-grow-1 ms-3">
+        <a asp-action="Detail" asp-controller="PostView" asp-route-postslug="@post.Slug">
+            <h2>@post.Title</h2>
+        </a>
+        <p>@post.Description</p>
+        <div>
+            @if(post.PostCategories.FirstOrDefault()!=null)
+            {
+               <p> Category: 
+                    <a asp-action="Index" asp-controller="PostView" 
+                    asp-route-categoryslug="@post.PostCategories.FirstOrDefault().Category.Slug">
+                        @post.PostCategories.FirstOrDefault().Category.Title
+                    </a>
+                </p>
+            }
+        </div>
+        <br>
+        <div class="Author">
+            @if(post.Author !=null)
+            {
+                <p>Author: @post.Author.UserName
+                    / Date Update: @post.DateUpdate.ToShortDateString()</p>
+            }
+            else {
+                <p>Date Update: @post.DateUpdate.ToShortDateString()</p>
+            }
+        </div>
+    </div>
+    </div>
+}
+@section Sidebar {
+    @await Component.InvokeAsync("App.Components.CategorySidebar", new CategorySidebar.CategorySidebarData{
+        Categories = categories,
+        CategorySlug = ViewBag.Slug,
+        Level = 0 
+    });
+}

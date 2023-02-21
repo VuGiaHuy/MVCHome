@@ -300,7 +300,7 @@ namespace MyApp.Migrations
             modelBuilder.Entity("App.Models.Blog.CategoryModels", b =>
                 {
                     b.HasOne("App.Models.Blog.CategoryModels", "ParentCategory")
-                        .WithMany("CategoryChildren")
+                        .WithMany("ChildrenCategory")
                         .HasForeignKey("ParentCategoryId");
 
                     b.Navigation("ParentCategory");
@@ -359,7 +359,7 @@ namespace MyApp.Migrations
 
             modelBuilder.Entity("App.Models.Blog.CategoryModels", b =>
                 {
-                    b.Navigation("CategoryChildren");
+                    b.Navigation("ChildrenCategory");
                 });
 #pragma warning restore 612, 618
         }
