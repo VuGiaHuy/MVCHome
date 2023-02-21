@@ -32,7 +32,7 @@ namespace Area.Blog.Controllers
         public async Task<IActionResult> Index()
         {
             var qr =(from c in _context.Categories
-                    select c).Include(c=>c.CategoryChildren).Include(c=>c.ParentCategory);
+                    select c).Include(c=>c.ChildrenCategory).Include(c=>c.ParentCategory);
             List<Category> ListCategory = (await qr.ToListAsync()).Where(c=>c.ParentCategory==null).ToList();
             return View(ListCategory);
         }
@@ -77,16 +77,16 @@ namespace Area.Blog.Controllers
                     };                  
                 }
                 des.Add(category);
-                if(item.CategoryChildren?.Count > 0)
+                if(item.ChildrenCategory?.Count > 0)
                 {
-                    await CreateSelectItems(item.CategoryChildren.ToList(),des,level+1);
+                    await CreateSelectItems(item.ChildrenCategory.ToList(),des,level+1);
                 }
             }
         }
         public async Task<IActionResult> Create()
         {
             var qr = (from c in _context.Categories
-                        select c).Include(c=>c.CategoryChildren).Include(c=>c.ParentCategory);
+                        select c).Include(c=>c.ChildrenCategory).Include(c=>c.ParentCategory);
             var listCategory = (await qr.ToListAsync()).Where(c=>c.ParentCategory==null).ToList();
             listCategory.Insert(0, new Category()
             {
@@ -130,12 +130,12 @@ namespace Area.Blog.Controllers
         {
             var qr = (from c in _context.Categories
                     where c.Id == id
-                    select c).Include(c=>c.CategoryChildren).FirstOrDefault();
+                    select c).Include(c=>c.ChildrenCategory).FirstOrDefault();
             if(qr==null)return;
             if(source==null)return;
-            if(qr.CategoryChildren?.Count > 0)
+            if(qr.ChildrenCategory?.Count > 0)
             {
-                foreach(Category item in qr.CategoryChildren)
+                foreach(Category item in qr.ChildrenCategory)
                 {
                     source.Remove(item);
                     RemoveChildren(source,item.Id);
@@ -156,7 +156,7 @@ namespace Area.Blog.Controllers
                 return NotFound();
             }
             var qr = (from c in _context.Categories
-                        select c).Include(c=>c.CategoryChildren).Include(c=>c.ParentCategory);
+                        select c).Include(c=>c.ChildrenCategory).Include(c=>c.ParentCategory);
 
             List<Category> ListCategory  = (await qr.ToListAsync()).Where(c=>c.ParentCategory==null).ToList();
             ListCategory.Remove(category);
@@ -176,7 +176,7 @@ namespace Area.Blog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ParentCategoryId,Title,Content,Slug")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("ParentCategoryId,Title,Content,Slug")] Category category)
         {
             if (id != category.Id)
             {
@@ -191,7 +191,7 @@ namespace Area.Blog.Controllers
             if(canUpdate && category.ParentCategoryId!=null)
             {
                 var childrenCate = (from c in _context.Categories
-                                    select c).Include(c=>c.CategoryChildren).ToList()
+                                    select c).Include(c=>c.ChildrenCategory).ToList()
                                     .Where(c=>c.ParentCategoryId==category.Id);
 
                 Predicate<List<Category>> checkCateId = null;
@@ -205,9 +205,9 @@ namespace Area.Blog.Controllers
                             ModelState.AddModelError(string.Empty,"k the chon thu muc con");
                             return true;
                         }
-                        if(cate.CategoryChildren!=null)
+                        if(cate.ChildrenCategory!=null)
                         {
-                            return checkCateId(cate.CategoryChildren.ToList());
+                            return checkCateId(cate.ChildrenCategory.ToList());
                         }
                     }
                     return false;
@@ -242,7 +242,7 @@ namespace Area.Blog.Controllers
                 return RedirectToAction(nameof(Index));
             }
             var qr = (from c in _context.Categories
-                        select c).Include(c=>c.CategoryChildren).Include(c=>c.ParentCategory);
+                        select c).Include(c=>c.ChildrenCategory).Include(c=>c.ParentCategory);
             List<Category> ListCategory = (await qr.ToListAsync()).Where(c=>c.ParentCategory==null).ToList();
             List<Category> items = new List<Category>();
             ListCategory.Insert(0,new Category{
@@ -284,12 +284,12 @@ namespace Area.Blog.Controllers
             }
             var category = (from c in _context.Categories
                             where c.Id == id
-                            select c).Include(c=>c.CategoryChildren).FirstOrDefault();
+                            select c).Include(c=>c.ChildrenCategory).FirstOrDefault();
             if (category != null)
             {
-                if(category.CategoryChildren?.Count > 0)
+                if(category.ChildrenCategory?.Count > 0)
                 {
-                    foreach(Category children in category.CategoryChildren)
+                    foreach(Category children in category.ChildrenCategory)
                     {
                         children.ParentCategoryId = category.ParentCategoryId;
                     }

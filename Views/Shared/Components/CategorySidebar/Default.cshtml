@@ -1,0 +1,34 @@
+@model App.Components.CategorySidebar.CategorySidebarData
+@using App.Components
+@if(Model.Categories.Count > 0)
+{
+    @if(Model.Level == 0)
+    {
+        @Html.Raw("<div class=\"categorysidebar\">");
+        <a asp-action="Index" asp-controller="PostView" asp-route-categoryslug="">
+            <h2>All Categories</h2>
+        </a>
+    }
+    <ul>
+        @foreach (var category in Model.Categories)
+        {
+            var cssActive = (category.Slug == Model.CategorySlug) ? "active" : null;
+            <li>
+                <a class="@cssActive" asp-action="Index" asp-controller="PostView" asp-route-categoryslug="@category.Slug">@category.Title</a>
+                @if(category.ChildrenCategory.Count > 0)
+                {
+                    @await Component.InvokeAsync("App.Components.CategorySidebar",new CategorySidebar.CategorySidebarData{
+                        Categories = category.ChildrenCategory.ToList(),
+                        CategorySlug = ViewBag.Slug,
+                        Level = ++Model.Level,
+                    });
+                }
+            </li>
+        }
+    </ul>
+    
+    @if(Model.Level == 0)
+    {
+        @Html.Raw("</div>");
+    }
+}

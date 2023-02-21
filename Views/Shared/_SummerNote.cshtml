@@ -1,0 +1,17 @@
+@model App.Models.SummerNote
+
+    @if(Model.Load)
+    {
+        <script src="~/lib/summernote/summernote-bs5.min.js"></script>
+        <link rel="stylesheet" href="~/lib/summernote/summernote-bs5.min.css"/>
+    }
+
+    <script>
+        $(document).ready(function(){
+        $('@Model.IdEditor').summernote({
+            tabsize: @Model.tabsize,
+            height: @Model.height,
+            toolbar: @Html.Raw(Model.toolbar)
+        });
+        });
+    </script>

@@ -361,7 +361,7 @@ namespace MyApp.Migrations
             modelBuilder.Entity("App.Models.Blog.Category", b =>
                 {
                     b.HasOne("App.Models.Blog.Category", "ParentCategory")
-                        .WithMany("CategoryChildren")
+                        .WithMany("ChildrenCategory")
                         .HasForeignKey("ParentCategoryId");
 
                     b.Navigation("ParentCategory");
@@ -450,7 +450,7 @@ namespace MyApp.Migrations
 
             modelBuilder.Entity("App.Models.Blog.Category", b =>
                 {
-                    b.Navigation("CategoryChildren");
+                    b.Navigation("ChildrenCategory");
                 });
 
             modelBuilder.Entity("App.Models.Blog.Post", b =>

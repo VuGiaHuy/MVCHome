@@ -53,9 +53,9 @@
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-        if(item.CategoryChildren?.Count >0)
+        if(item.ChildrenCategory?.Count >0)
         {
-            foreach(Category children in item.CategoryChildren)
+            foreach(Category children in item.ChildrenCategory)
             {
                 await RenderHtml(children,level+1);
             }
