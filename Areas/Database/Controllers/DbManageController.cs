@@ -14,6 +14,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Bogus;
 using App.Models.Blog;
+using App.Models.Product;
 
 namespace Area.DbMangae.Controllers
 {
@@ -86,14 +87,16 @@ namespace Area.DbMangae.Controllers
                 await _userManager.AddToRoleAsync(admin, RoleName.Administrator);
             }
             await SeedCategory();
+            await SeedProduct();
             await _signInManager.SignInAsync(admin, true);
             StatusMessage = "Seed data success";
             return RedirectToAction(nameof(Index));
         }
         private async Task SeedCategory()
         {
-            _dbContext.RemoveRange(_dbContext.Categories.Where(c=>c.Content.Contains("[FakeData]")));
-           // _dbContext.RemoveRange(_dbContext.Posts.Where(c=>c.Content.Contains("[FakeData]")));
+            _dbContext.Categories.RemoveRange(_dbContext.Categories.Where(c=>c.Content.Contains("[FakeData]")));
+            _dbContext.Posts.RemoveRange(_dbContext.Posts.Where(c=>c.Content.Contains("[FakeData]")));
+            _dbContext.SaveChanges();
             var faker = new Faker<Category>();
             int cm = 1;
             faker.RuleFor(c => c.Title, faker => $"CM{cm++}" + faker.Lorem.Sentence(1, 2).Trim('.'))
@@ -135,7 +138,7 @@ namespace Area.DbMangae.Controllers
             List<Post> posts = new List<Post>();
             List<PostCategory> post_category = new List<PostCategory>();
 
-            for(int i=0; i<40; i++)
+            for(int i=0; i<1; i++)
             {
                 var post = fakerPost.Generate();
                 post.DateUpdate = post.DateCreate;
@@ -147,6 +150,68 @@ namespace Area.DbMangae.Controllers
             }
             _dbContext.AddRange(posts);
             _dbContext.AddRange(post_category);
+            _dbContext.SaveChanges();
+
+        }
+        private async Task SeedProduct()
+        {
+            _dbContext.RemoveRange(_dbContext.PCategories.Where(c=>c.Content.Contains("[FakeData]")));
+            _dbContext.RemoveRange(_dbContext.Products.Where(c=>c.Content.Contains("[FakeData]")));
+            _dbContext.SaveChanges();
+            var faker = new Faker<PCategory>();
+            int cm = 1;
+            faker.RuleFor(c => c.Title, faker => $"Nhom san pham {cm++}" + faker.Lorem.Sentence(1, 2).Trim('.'))
+                .RuleFor(c => c.Content, faker => faker.Lorem.Sentences(5) + "[FakeData]")
+                .RuleFor(c => c.Slug, faker => faker.Lorem.Slug());
+
+
+            var cate1 = faker.Generate();
+            var cate11 = faker.Generate();
+            var cate12 = faker.Generate();
+
+            var cate2 = faker.Generate();
+            var cate21 = faker.Generate();
+            var cate211 = faker.Generate();
+
+            cate11.ParentCategory = cate1;
+            cate12.ParentCategory = cate1;
+            cate21.ParentCategory = cate2;
+            cate211.ParentCategory = cate21;
+
+            var cates = new PCategory[]{ cate1, cate11, cate12, cate2, cate21, cate211 };
+            _dbContext.PCategories.AddRange(cates);
+        
+
+
+            var rCateIndex = new Random();
+            int sanpham = 1;
+            var user =  _userManager.GetUserAsync(this.User).Result;
+            
+            var fakerProduct = new Faker<ProductModel>();
+            fakerProduct.RuleFor(p=>p.AuthorId,faker=>user.Id);
+            fakerProduct.RuleFor(p=>p.Content,faker=>faker.Lorem.Paragraphs(5)+"[FakeData]");
+            fakerProduct.RuleFor(p=>p.DateCreate,faker=>faker.Date.Between(new DateTime(2000,1,1),new DateTime(2022,1,1)));
+            fakerProduct.RuleFor(p=>p.Description,faker=>faker.Lorem.Sentence(3));
+            fakerProduct.RuleFor(p=>p.Published,faker=>true);
+            fakerProduct.RuleFor(p=>p.Slug,faker=>faker.Lorem.Slug());
+            fakerProduct.RuleFor(p=>p.Title,faker=>$"San pham {sanpham++}"+faker.Commerce.ProductName());
+            fakerProduct.RuleFor(p=>p.Price,faker=>decimal.Parse(faker.Commerce.Price(500,100000,2)));
+
+            List<ProductModel> products = new List<ProductModel>();
+            List<ProductPCategory> product_category = new List<ProductPCategory>(); 
+
+            for(int i=0; i<40; i++)
+            {
+                var product = fakerProduct.Generate();
+                product.DateUpdate = product.DateCreate;
+                products.Add(product);
+                product_category.Add(new ProductPCategory{
+                    Post = product,
+                    Category = cates[rCateIndex.Next(5)]
+                });
+            }
+            _dbContext.AddRange(products);
+            _dbContext.AddRange(product_category);
             _dbContext.SaveChanges();
 
         }
