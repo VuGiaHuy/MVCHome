@@ -71,8 +71,9 @@ namespace Area.Blog.Controllers
             var categories = GetCategory();
 
             Category category = post.PostCategories.FirstOrDefault()?.Category;
-            
-            
+            List<Post> otherPost = _context.Posts.Include(p=>p.PostCategories).Where(p=>p.PostCategories.Where(pc=>pc.CategoryId == category.Id).Any())
+                                                 .Where(p=>p.Slug!=postslug).Take(5).ToList();
+            ViewData["OtherPost"] = otherPost;
             ViewData["Slug"] = post.Slug;
             ViewData["Categories"] = categories;
             ViewData["Category"] = category;
